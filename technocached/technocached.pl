@@ -23,7 +23,7 @@ tcp_server $listen, $port, sub {
 
 	$h->on_error(sub { $h->destroy; });
 	#ToDo получение/удаление нескольких ключей
-	$h->push_read( line => sub {
+	my $lsub; $lsub = sub {
 		if ($_[1] =~ m/^set (?<key>\w+) (?<flags>\w+) (?<expire>\w+) (?<bytes>\d+)\\r\\n/){
 			my $key = $+{key};
 			my $struct = {	flags => $+{flags},
@@ -89,7 +89,9 @@ tcp_server $listen, $port, sub {
 				$h->push_write("NOT_FOUND\r\n");
 			}
 		}
-	});
+		$h->push_read( line => \&$lsub);
+	};
+	$h->push_read( line => \&$lsub);
 	return;
 };
 
