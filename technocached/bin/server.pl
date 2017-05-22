@@ -4,10 +4,34 @@ use warnings;
 use AnyEvent;
 use AnyEvent::Socket;
 use AnyEvent::Handle;
+use Getopt::Long;
 
-#ToDo getopt long
+=head1 USAGE
 
-my ($listen, $port) = ("0.0.0.0", 11211);
+nc localhost 11211
+ 
+ set key_name flags expire 100\r\n
+ data\r\n
+
+ get key_name\r\n
+
+=head1 DESCRIPTION
+
+Асинхронный tcp сервер memchached на AnyEvent::Scoket;
+
+=cut
+
+
+
+my ($listen, $port);
+
+GetOptions (
+	"listen|l=s" => \$listen,
+	"port|p=i" => \$port,
+	) or die 'Err args';
+
+$listen = "127.0.0.1" unless $listen;
+$port = 11211 unless $port;
 
 my $cv = AE::cv;
 
