@@ -8,6 +8,8 @@ use Getopt::Long;
 
 =head1 USAGE
 
+Через Cache::Memcached::Fast;
+или вручную:
 nc localhost 11211
  
  set key_name flags expire 100\r\n
@@ -15,6 +17,8 @@ nc localhost 11211
 
  get key_name\r\n
 
+
+ 
 =head1 DESCRIPTION
 
 Асинхронный tcp сервер memchached на AnyEvent::Scoket;
@@ -48,6 +52,7 @@ tcp_server $listen, $port, sub {
 	$h->on_error(sub { $h->destroy; });
 	#ToDo получение/удаление нескольких ключей
 	my $lsub; $lsub = sub {
+		#warn $_[1]; for debug
 		if ($_[1] =~ m/^set (?<key>\w+) (?<flags>\w+) (?<expire>\w+) (?<bytes>\d+)\\r\\n/){
 			my $key = $+{key};
 			my $struct = {	flags => $+{flags},
