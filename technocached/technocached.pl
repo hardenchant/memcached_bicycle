@@ -1,8 +1,11 @@
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use AnyEvent;
 use AnyEvent::Socket;
 use AnyEvent::Handle;
+
+#ToDo getopt long
 
 my ($listen, $port) = ("0.0.0.0", 11211);
 
@@ -10,7 +13,7 @@ my $cv = AE::cv;
 
 my %db;
 
-
+#ToDo удаление ключа по estimated time
 tcp_server $listen, $port, sub {
 	my $fh = shift;
 	my $h = AnyEvent::Handle->new(
@@ -19,6 +22,7 @@ tcp_server $listen, $port, sub {
 	);
 
 	$h->on_error(sub { $h->destroy; });
+	#ToDo получение/удаление нескольких ключей
 	$h->push_read( line => sub {
 		if ($_[1] =~ m/^set (?<key>\w+) (?<flags>\w+) (?<expire>\w+) (?<bytes>\d+)\\r\\n/){
 			my $key = $+{key};
@@ -85,7 +89,6 @@ tcp_server $listen, $port, sub {
 				$h->push_write("NOT_FOUND\r\n");
 			}
 		}
-		$h->destroy;
 	});
 	return;
 };
